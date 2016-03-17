@@ -48,7 +48,6 @@
 
 - name: setup the elasticsearch cluster on nodes
   hosts: nodes
-  serial: 1
   vars_files:
     - vars/common_vars 
     - vars/common_vault

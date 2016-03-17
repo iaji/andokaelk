@@ -12,7 +12,6 @@ zookeeper_leader_selection_port_start: 3888
 elasticsearch_port_start: 9200
 elasticsearch_node_port_start: 9300
 kibana_port: 5601
-session_duration: 86400
 google_app_client_id: "{{ vault_google_app_client_id }}"
 google_app_client_secret: "{{ vault_google_app_client_secret }}"
 email_domain: "gmail.com"

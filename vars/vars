@@ -16,7 +16,8 @@ google_app_client_id: "{{ vault_google_app_client_id }}"
 google_app_client_secret: "{{ vault_google_app_client_secret }}"
 email_domain: "gmail.com"
 topics:
-    - "twitter" 
+    - "elasticsearch-access"
+    - "kibana-access" 
 images:
     kafka: "kafka:v1"
     elasticsearch: "elasticsearch:v1"

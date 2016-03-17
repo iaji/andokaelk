@@ -1,0 +1,16 @@
+- name: create logstash staging directory
+  file: path={{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/ state=directory
+- name: create logstash configuration directory in logstash staging directory
+  file: path={{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/config/ state=directory
+- name: create logstash input directory in logstash staging directory
+  file: path={{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/input/ state=directory
+- name: create logstash output directory in logstash staging directory
+  file: path={{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/output/ state=directory
+- name: copy configuration file
+  template: src={{ template }} dest={{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/config/logstash.conf
+- name: copy elasticsearch mapping template for logstash
+  template: src=elasticsearch_template.json dest={{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/config/elasticsearch_template.json
+- name: copy the compose file
+  template: src={{ compose }} dest={{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/docker-compose.yaml
+- name: run the compose command
+  command: "{{ project_stage_dir }}/docker-compose -f {{ project_stage_dir }}/{{ type }}{{ node_id if node_id != None }}/docker-compose.yaml {{ compose_command }}"

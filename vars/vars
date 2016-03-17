@@ -1,0 +1,35 @@
+---
+project_id: "andokaelk"
+kibana_access_host: "{{ hostvars['gateway']['expose_kibana_as'] }}"
+elasticsearch_access_host: "{{ hostvars['gateway']['expose_elasticsearch_as'] }}"
+kibana_access_port: "{{ hostvars['gateway']['expose_kibana'] | int }}"
+elasticsearch_access_port: "{{ hostvars['gateway']['expose_elasticsearch'] | int }}"
+receiver_access_port: "{{ hostvars['gateway']['expose_receiver'] | int }}"
+kafka_port_start: 9092
+zookeeper_client_port_start: 2181
+zookeeper_inner_port_start: 2888
+zookeeper_leader_selection_port_start: 3888
+elasticsearch_port_start: 9200
+elasticsearch_node_port_start: 9300
+kibana_port: 5601
+session_duration: 86400
+google_app_client_id: "{{ vault_google_app_client_id }}"
+google_app_client_secret: "{{ vault_google_app_client_secret }}"
+email_domain: "gmail.com"
+topics:
+    - "twitter" 
+images:
+    kafka: "kafka:v1"
+    elasticsearch: "elasticsearch:v1"
+    logstash: "logstash:v1"
+    kibana: "kibana:v1"
+    oauth2: "oauth2:v1"
+kibana_access_white_list:
+    - s1006595991@gmail.com
+elasticsearch_access_white_list:
+    - s1006595991@gmail.com
+kibana_key: "/root/server-key.pem"
+kibana_cert: "/root/server-cert.pem"
+elasticsearch_key: "/root/server-key.pem"
+elasticsearch_cert: "/root/server-cert.pem"
+default_network: "dockswarm_default"

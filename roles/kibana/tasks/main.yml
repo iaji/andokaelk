@@ -1,0 +1,14 @@
+- name: create kibana staging directory
+  file: path={{ project_stage_dir }}/kibana state=directory
+- name: create kibana configuration directory in kibana staging directory
+  file: path={{ project_stage_dir }}/kibana/config state=directory
+- name: create kibana logging directory in kibana staging directory
+  file: path={{ project_stage_dir }}/kibana/log state=directory
+- name: copy kibana configuration file
+  template: src=kibana.yaml dest={{ project_stage_dir }}/kibana/config/kibana.yaml
+- name: initialize log file if not exist
+  file: path={{ project_stage_dir }}/kibana/log/kibana.log state=touch
+- name: copy the compose file
+  template: src=docker-compose.yaml dest={{ project_stage_dir }}/kibana/docker-compose.yaml
+- name: run the compose command
+  command: "{{ project_stage_dir }}/docker-compose -f {{ project_stage_dir }}/kibana/docker-compose.yaml {{ compose_command }}"

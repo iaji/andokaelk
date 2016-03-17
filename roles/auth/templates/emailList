@@ -1,0 +1,2 @@
+{% for email in access_white_list %}{{ email }}
+{% endfor %}

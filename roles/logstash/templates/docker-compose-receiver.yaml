@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+    {{ type }}:
+        image: {{ docker_registry }}/{{ images.logstash }}
+        volumes:
+            - ./config/:/tmp/logstash/config
+            - ./input/:/tmp/logstash/input
+            - ./output/:/tmp/logstash/output
+        ports:
+            - 0.0.0.0:{{ receiver_access_port }}:{{ receiver_access_port }}
+        hostname: {{ type }}
+        container_name: {{ project_id }}_{{ type }}
+        restart: always
+
+networks:
+    default:
+        external:
+            name: {{ default_network }}

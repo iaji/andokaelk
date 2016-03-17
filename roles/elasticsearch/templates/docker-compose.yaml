@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+    elasticsearch{{ node_id }}:
+        image: {{ docker_registry }}/{{ images.elasticsearch }}
+        volumes:
+            - ./config/elasticsearch.yml:/usr/share/elasticsearch/elasticsearch-2.2.0/config/elasticsearch.yml
+            - ./config/logging.yml:/usr/share/elasticsearch/elasticsearch-2.2.0/config/logging.yml
+            - ./data/:/tmp/elasticsearch/data 
+            - ./log/:/tmp/elasticsearch/log 
+        hostname: elasticsearch{{ node_id }}
+        container_name: {{ project_id }}_elasticsearch_{{ node_id }}
+        restart: always
+
+
+networks:
+    default:
+        external:
+            name: {{ default_network }}

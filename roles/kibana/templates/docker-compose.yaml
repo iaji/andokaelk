@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+    kibana:
+        image: {{ docker_registry }}/{{ images.kibana }}
+        volumes:
+            - ./config/:/tmp/kibana/config
+            - ./log/:/tmp/kibana/log
+        hostname: kibana
+        container_name: {{ project_id }}_kibana
+        restart: always
+
+networks:
+    default:
+        external:
+            name: {{ default_network }}

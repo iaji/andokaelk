@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+    kafka{{ node_id }}:
+        image: {{ docker_registry }}/{{ images.kafka }}
+        volumes:
+            - ./zookeeper/:/tmp/zookeeper
+            - ./kafka/:/tmp/kafka
+        hostname: kafka{{ node_id }}
+        container_name: {{ project_id }}_kafka_{{ node_id }}
+        restart: always
+
+networks:
+    default:
+        external:
+            name: {{ default_network }}

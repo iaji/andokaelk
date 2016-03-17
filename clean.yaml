@@ -1,0 +1,57 @@
+---
+
+- name: clean up
+  hosts: nodes
+  vars_files:
+    - vars/common_vars 
+    - vars/common_vault
+    - vars/vars
+    - vars/vault
+  vars:
+  - project_stage_dir: "{{ stage_dir }}/{{ project_id }}/{{ inventory_hostname }}"
+  tasks:
+  - name: remove project staging directory
+    file: path={{ project_stage_dir }} state=absent
+    become: true
+    become_user: root
+
+- name: clean up
+  hosts: gateway
+  vars_files:
+    - vars/common_vars 
+    - vars/common_vault
+    - vars/vars
+    - vars/vault
+  vars:
+  - project_stage_dir: "{{ stage_dir }}/{{ project_id }}/{{ inventory_hostname }}"
+  tasks:
+  - name: remove project staging directory
+    file: path={{ project_stage_dir }} state=absent
+    become: true
+    become_user: root
+
+- name: clean up
+  hosts: nodes
+  vars_files:
+    - vars/common_vars 
+    - vars/common_vault
+    - vars/vars
+    - vars/vault
+  tasks:
+  - name: remove project staging directory
+    file: path={{ stage_dir }}/{{ project_id }} state=absent
+    become: true
+    become_user: root
+
+- name: clean up
+  hosts: gateway
+  vars_files:
+    - vars/common_vars 
+    - vars/common_vault
+    - vars/vars
+    - vars/vault
+  tasks:
+  - name: remove project staging directory
+    file: path={{ stage_dir }}/{{ project_id }} state=absent
+    become: true
+    become_user: root

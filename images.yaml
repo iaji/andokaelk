@@ -1,0 +1,16 @@
+---
+
+- name: create and push the images to registry
+  hosts: gateway
+  vars_files:
+    - vars/common_vars 
+    - vars/common_vault
+    - vars/vars
+    - vars/vault
+  vars:
+    - project_stage_dir: "{{ stage_dir }}/{{ project_id }}/{{ inventory_hostname }}"
+  pre_tasks:
+    - name: make sure that the staging directory exists
+      file: path={{ project_stage_dir }} state=directory
+  roles:
+    - image

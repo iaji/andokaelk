@@ -1,0 +1,27 @@
+version: '2'
+
+services:
+    {{ role_id }}oauth2:
+        image: {{ docker_registry }}/{{ images.oauth2 }}
+        volumes:
+            - ./oauth2/:/tmp/oauth2/config
+            - ./output/:/tmp/oauth2/output
+        ports:
+            - "0.0.0.0:{{ access_port }}:{{ access_port }}"
+        hostname: {{ role_id }}oauth2
+        container_name: {{ project_id }}_{{ role_id }}_oauth2
+        restart: always
+
+    {{ role_id }}authlog:
+        image: {{ docker_registry }}/{{ images.logstash }}
+        volumes:
+            - ./logstash/:/tmp/logstash/config
+            - ./output/:/tmp/logstash/input
+        hostname: {{ role_id }}authlog
+        container_name: {{ project_id }}_{{ role_id }}_authlog
+        restart: always
+
+networks:
+    default:
+        external:
+            name: {{ default_network }}

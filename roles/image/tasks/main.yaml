@@ -1,0 +1,12 @@
+- name: make sure image staging directory exists
+  file: path={{ project_stage_dir }}/image state=directory
+- name: copy dockerfiles
+  synchronize: src=. dest={{ project_stage_dir }}/image recursive=yes
+- name: login to registry
+  command: 'docker login -u {{ registry_user }} -p {{ registry_pass }} -e null https://{{ docker_registry }}'
+- name: build images
+  command: "docker build -t {{ docker_registry }}/{{ item.value }} {{ project_stage_dir }}/image/{{ item.key }}/"
+  with_dict: "{{ images }}"
+- name: push images to registry
+  command: "docker push {{ docker_registry }}/{{ item.value }}"
+  with_dict: "{{ images }}"

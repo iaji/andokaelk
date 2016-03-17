@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+    {{ type }}{{ node_id if node_id != None }}:
+        image: {{ docker_registry }}/{{ images.logstash }}
+        volumes:
+            - ./config/:/tmp/logstash/config
+            - ./input/:/tmp/logstash/input
+            - ./output/:/tmp/logstash/output
+        hostname: {{ type }}{{ node_id if node_id != None}}
+        container_name: {{ project_id }}_{{ type }}{% if node_id!=None %}{{ '_'+node_id }}
+{% endif %}
+        restart: always
+
+networks:
+    default:
+        external:
+            name: {{ default_network }}

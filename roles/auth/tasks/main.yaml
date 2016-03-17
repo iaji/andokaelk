@@ -1,0 +1,60 @@
+- name: make sure auth staging directory exists
+  file: path={{ project_stage_dir }}/auth/{{ role_id }} state=directory
+- name: create oauth2 configuration directory in auth directory
+  file: path={{ project_stage_dir }}/auth/{{ role_id }}/oauth2 state=directory
+- name: create oauth2 certs directory in oauth2 configuration directory
+  file: path={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs state=directory
+- name: create logstash configuration directory in auth directory
+  file: path={{ project_stage_dir }}/auth/{{ role_id }}/logstash state=directory
+- name: create output directory for log in auth directory
+  file: path={{ project_stage_dir }}/auth/{{ role_id }}/output state=directory
+- name: copy oauth2 configuration file
+  template: src=oauth2_proxy.cfg dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/oauth2_proxy.cfg
+- name: copy oauth2 email list file
+  template: src=emailList dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/emailList
+- name: see if the certificate key exists  
+  stat: path={{ server_key }}
+  register: default_cert
+- name: see if the certificate exists  
+  stat: path={{ server_cert }}
+  register: default_key
+- name: 'delete old key if exists'
+  file: 'path={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key state=absent'
+- name: 'delete old cert if exists'
+  file: 'path={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.crt state=absent'
+- name: copy the certificate key to its desired location
+  copy: remote_src=true src={{ server_key }} dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key
+  when: default_cert.stat.exists == True and default_key.stat.exists == True
+- name: copy the certificate to its desired location
+  copy: remote_src=true src={{ server_cert }} dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.crt
+  when: default_cert.stat.exists == True and default_key.stat.exists == True
+- name: 'generate registry key "domain.key"'
+  command: 'openssl genrsa -out {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key 2048'
+  when: default_cert.stat.exists == False or default_key.stat.exists == False
+- name: 'generate "server.csr" from "domain.key"'
+  command: 'openssl req -subj "/CN={{ host_ip }}" -new -key {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key -out {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/server.csr'
+  when: default_cert.stat.exists == False or default_key.stat.exists == False
+- name: 'generate "extfile.cnf"'
+  copy: 'content="subjectAltName = IP:{{ host_ip }},IP:{{ access_host }},IP:127.0.0.1,DNS:localhost" dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/extfile.cnf'
+  when: default_cert.stat.exists == False or default_key.stat.exists == False
+- name: 'generate "domain.crt"'
+  command: 'openssl x509 -req -days 365 -in {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/server.csr -CA {{ ca_dir }}/ca.pem -CAkey {{ ca_dir }}/ca-key.pem -CAcreateserial -out {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.crt -extfile {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/extfile.cnf -passin "pass:{{ ca_pass }}"'
+  when: default_cert.stat.exists == False or default_key.stat.exists == False
+- name: 'remove intermediate files'
+  file: 'path={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/{{ item }} state=absent'
+  with_items:
+    - extfile.cnf
+    - server.csr
+  when: default_cert.stat.exists == False or default_key.stat.exists == False
+- name: 'chmod for key'
+  file: 'path={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key mode=0400'
+- name: 'chmod for cert'
+  file: 'path={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.crt mode=0444'
+- name: 'copy the logstash configuration file'
+  template: src=logstash.conf dest={{ project_stage_dir }}/auth/{{ role_id }}/logstash/logstash.conf
+- name: 'copy the logstash elasticsearch template'
+  template: src=elasticsearch_template.json dest={{ project_stage_dir }}/auth/{{ role_id }}/logstash/elasticsearch_template.json
+- name: copy the compose file
+  template: src=docker-compose.yaml dest={{ project_stage_dir }}/auth/{{ role_id }}/docker-compose.yaml
+- name: run the compose command
+  command: "{{ project_stage_dir }}/docker-compose -f {{ project_stage_dir }}/auth/{{ role_id }}/docker-compose.yaml {{ compose_command }}"

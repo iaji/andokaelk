@@ -1,0 +1,24 @@
+- name: make sure kafka staging directory exists
+  file: path={{ project_stage_dir }}/kafka{{ node_id }} state=directory
+- name: create zookeeper configuration directory in kafka directory
+  file: path={{ project_stage_dir }}/kafka{{ node_id }}/zookeeper state=directory
+- name: create zookeeper data directory in zookeeper configuration directory
+  file: path={{ project_stage_dir }}/kafka{{ node_id }}/zookeeper/data state=directory
+- name: create zookeeper log directory in zookeeper configuration directory
+  file: path={{ project_stage_dir }}/kafka{{ node_id }}/zookeeper/log state=directory
+- name: create kafka configuration directory in kafka directory
+  file: path={{ project_stage_dir }}/kafka{{ node_id }}/kafka state=directory
+- name: create kafka data directory in kafka configuration directory
+  file: path={{ project_stage_dir }}/kafka{{ node_id }}/kafka/data state=directory
+- name: create kafka log directory in kafka configuration directory
+  file: path={{ project_stage_dir }}/kafka{{ node_id }}/kafka/log state=directory
+- name: copy zookeeper properties file
+  template: src=zookeeper.properties dest={{ project_stage_dir }}/kafka{{ node_id }}/zookeeper/zookeeper.properties
+- name: copy zookeeper myid file
+  template: src=myid dest={{ project_stage_dir }}/kafka{{ node_id }}/zookeeper/data/myid
+- name: copy kafka properties file
+  template: src=kafka.properties dest={{ project_stage_dir }}/kafka{{ node_id }}/kafka/kafka.properties
+- name: copy the compose file
+  template: src=docker-compose.yaml dest={{ project_stage_dir }}/kafka{{ node_id }}/docker-compose.yaml
+- name: run the compose command
+  command: "{{ project_stage_dir }}/docker-compose -f {{ project_stage_dir }}/kafka{{ node_id }}/docker-compose.yaml {{ compose_command }}"

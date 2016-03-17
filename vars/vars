@@ -28,8 +28,8 @@ kibana_access_white_list:
     - s1006595991@gmail.com
 elasticsearch_access_white_list:
     - s1006595991@gmail.com
-kibana_key: "/root/server-key.pem"
-kibana_cert: "/root/server-cert.pem"
-elasticsearch_key: "/root/server-key.pem"
-elasticsearch_cert: "/root/server-cert.pem"
+kibana_key: "{{ home_dir_abs }}/server-key.pem"
+kibana_cert: "{{ home_dir_abs }}/server-cert.pem"
+elasticsearch_key: "{{ home_dir_abs }}/server-key.pem"
+elasticsearch_cert: "{{ home_dir_abs }}/server-cert.pem"
 default_network: "dockswarm_default"

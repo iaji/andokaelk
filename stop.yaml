@@ -1,5 +1,18 @@
 ---
 
+- name: setup
+  hosts: all
+  vars_files:
+    - vars/common_vars 
+    - vars/common_vault
+    - vars/vars
+    - vars/vault
+  vars:
+    - project_stage_dir: "{{ stage_dir }}/{{ project_id }}/{{ inventory_hostname }}"
+  tasks:
+    - name: setup
+      debug: msg="gathered info from host" 
+
 - name: stop the docker containers on nodes
   hosts: nodes
   vars_files:
@@ -36,6 +49,6 @@
     - compose_command: "stop"
   tasks:
     - name: "stop the containers"
-      command: "docker stop {{ project_id }}_receiver {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"
+      command: "docker stop {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"
     - name: "remove the containers"
-      command: "docker rm -vf {{ project_id }}_receiver {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"
+      command: "docker rm -vf {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"

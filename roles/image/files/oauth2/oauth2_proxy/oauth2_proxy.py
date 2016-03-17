@@ -18,10 +18,11 @@ def cookie_id_generator(size=32, chars=string.ascii_uppercase + string.digits + 
     return ''.join(random.choice(chars) for _ in range(size))
 
 class oauth2_proxy_handler():
-    def __init__(self,proxy,configFile,logFile):
+    def __init__(self,proxy,configFile,logFile,timeOut):
         self.proxy = proxy
         self.configFile = configFile
         self.logFile = logFile
+        self.timeOut = timeOut
         
     def cookie_setter(self):
         session_id = ''
@@ -34,21 +35,27 @@ class oauth2_proxy_handler():
         return session_id
                 
     def run(self):
-        session_id = self.cookie_setter()
-        with open(self.logFile, 'a+') as log:
-            rightNow = datetime.now()
-            timestamp = str(rightNow.year).zfill(4)+'/'+str(rightNow.month).zfill(2)+'/'+str(rightNow.day).zfill(2)+' '+str(rightNow.hour).zfill(2)+':'+str(rightNow.minute).zfill(2)+':'+str(rightNow.second).zfill(2)
-            log.write(timestamp+' Logging session with id: '+session_id+'\n')
-            log.flush()
-            self.proc = subprocess.Popen(self.proxy+' -config="'+self.configFile+'"',shell=True, stdout=log, stderr=log, preexec_fn=os.setsid)
+        while True:
+            session_id = self.cookie_setter()
+            with open(self.logFile, 'a+') as log:
+                rightNow = datetime.now()
+                timestamp = str(rightNow.year).zfill(4)+'/'+str(rightNow.month).zfill(2)+'/'+str(rightNow.day).zfill(2)+' '+str(rightNow.hour).zfill(2)+':'+str(rightNow.minute).zfill(2)+':'+str(rightNow.second).zfill(2)
+                log.write(timestamp+' Logging session with id: '+session_id+'\n')
+                log.flush()
+                self.proc = subprocess.Popen(self.proxy+' -config="'+self.configFile+'"',shell=True, stdout=log, stderr=log, preexec_fn=os.setsid)
+                time.sleep(self.timeOut)
+                os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
+                self.proc.terminate()
+                self.proc.wait()
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('proxy', metavar="PROXY", nargs = '?', default ='', help = "Location of oauth2_proxy binary.")
     parser.add_argument('configFile', metavar="CFG_FILE", nargs = '?', default ='', help = "Configuration file for oauth2_proxy")
     parser.add_argument('logFile', metavar="LOG_FILE", nargs = '?', default ='', help = "Log file to write to for oauth2_proxy")
+    parser.add_argument('sessionTimeOut', metavar="TIMEOUT", nargs = '?', type=  int , default = 86400, help = "Integer session time-out length in seconds.")
     args = parser.parse_args()
-    oauth2_proxy_handler(args.proxy,args.configFile,args.logFile).run()
+    oauth2_proxy_handler(args.proxy,args.configFile,args.logFile,args.sessionTimeOut).run()
         
         
         

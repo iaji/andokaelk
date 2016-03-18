@@ -35,7 +35,7 @@
   command: 'openssl req -subj "/CN={{ host_ip }}" -new -key {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key -out {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/server.csr'
   when: default_cert.stat.exists == False or default_key.stat.exists == False
 - name: 'generate "extfile.cnf"'
-  copy: 'content="subjectAltName = IP:{{ host_ip }},IP:{{ access_host }},IP:127.0.0.1,DNS:localhost" dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/extfile.cnf'
+  copy: 'content="subjectAltName = IP:{{ host_ip }},IP:{{ access_host }},IP:127.0.0.1,DNS:localhost,DNS:{{ redirect_domain }}" dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/extfile.cnf'
   when: default_cert.stat.exists == False or default_key.stat.exists == False
 - name: 'generate "domain.crt"'
   command: 'openssl x509 -req -days 365 -in {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/server.csr -CA {{ ca_dir }}/ca.pem -CAkey {{ ca_dir }}/ca-key.pem -CAcreateserial -out {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.crt -extfile {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/extfile.cnf -passin "pass:{{ ca_pass }}"'

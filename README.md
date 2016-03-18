@@ -16,7 +16,7 @@ A few steps to take before running the playbook:
 5. Make sure all distination hosts have `python2.7` installed. 
 6. If you would like to create a private docker registry and use it for all your images, you could do so with [dockreg](http://xialingxiao.github.io/dockreg). In which case, make sure `pip` and python package `pexpect` are installed at registry host. 
 7. Install `ansible 2.0.0.2` and its dependencies locally.
-8. Open the inventory file [staging](staging) and modify the destinations accordingly and update the variables.
+8. Open the inventory file [staging](https://github.com/xialingxiao/andokaelk/blob/master/staging) and modify the destinations accordingly and update the variables.
 9. Choose a vault passphrase and use the same passphrase for the following two steps.
 10. Run `ansible-vault create vars/common_vault` and add the following variables for passwords:
     * `vault_ca_pass`
@@ -37,7 +37,7 @@ To start all containers:
 ansible-playbook -i staging --ask-vault-pass run.yaml
 ```
 
-[Andokaelk_Container_Structure_Diagram.pdf](Andokaelk_Container_Structure_Diagram.pdf) illustrates the complete container structure when you have one gateway and three nodes. Gateway also hosts a private docker registry in this case. The registry does not reside in the `overlay` network but has port 5000 open.
+[Andokaelk_Container_Structure_Diagram.pdf](https://github.com/xialingxiao/andokaelk/blob/master/Andokaelk_Container_Structure_Diagram.pdf) illustrates the complete container structure when you have one gateway and three nodes. Gateway also hosts a private docker registry in this case. The registry does not reside in the `overlay` network but has port 5000 open.
 
 To stop and remove all containers:
 ```

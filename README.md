@@ -8,6 +8,7 @@ AnDoKaElk
 This package creates a all components of a log processing pipeline. 
 
 A few steps to take before running the playbook:
+
 1. Please open the inventory file [staging](staging) to modify the destinations and corresponding variables according to your setup.
 2. Please install `ansible 2.0.0.2` and its dependencies.
 3. Run `ansible-vault create vars/common_vault` and add the following variables for passwords:

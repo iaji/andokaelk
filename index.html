@@ -31,7 +31,7 @@
 <h6>
 <a id="creation-date-2016-03-17" class="anchor" href="#creation-date-2016-03-17" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creation Date: 2016-03-17</h6>
 
-<p>This package creates a all components of a log processing pipeline. </p>
+<p>This is an <code>ansible</code> playbook for creating a secured and dockerized private <code>kafka</code> and <code>elasticsearch</code> cluster with <code>logstash</code> as connectors. It uses <code>kibana</code> and <code>elasticsearch-kopf</code> as UI and <a href="https://github.com/bitly/oauth2_proxy"><code>oauth2_proxy</code></a> as security frontend.</p>
 
 <p>A few steps to take before running the playbook:</p>
 
@@ -43,7 +43,7 @@
 <li>Make sure all distination hosts have <code>python2.7</code> installed. </li>
 <li>If you would like to create a private docker registry and use it for all your images, you could do so with <a href="http://xialingxiao.github.io/dockreg">dockreg</a>. In which case, make sure <code>pip</code> and python package <code>pexpect</code> are installed at registry host. </li>
 <li>Install <code>ansible 2.0.0.2</code> and its dependencies locally.</li>
-<li>Open the inventory file <a href="staging">staging</a> and modify the destinations accordingly and update the variables.</li>
+<li>Open the inventory file <a href="https://github.com/xialingxiao/andokaelk/blob/master/staging">staging</a> and modify the destinations accordingly and update the variables.</li>
 <li>Choose a vault passphrase and use the same passphrase for the following two steps.</li>
 <li>Run <code>ansible-vault create vars/common_vault</code> and add the following variables for passwords:
 
@@ -74,7 +74,7 @@ ansible-playbook -i staging --ask-vault-pass images.yaml
 <pre><code>ansible-playbook -i staging --ask-vault-pass run.yaml
 </code></pre>
 
-<p><a href="Andokaelk_Container_Structure_Diagram.pdf">Andokaelk_Container_Structure_Diagram.pdf</a> illustrates the complete container structure when you have one gateway and three nodes. Gateway also hosts a private docker registry in this case. The registry does not reside in the <code>overlay</code> network but has port 5000 open.</p>
+<p><a href="https://github.com/xialingxiao/andokaelk/blob/master/Andokaelk_Container_Structure_Diagram.pdf">Andokaelk_Container_Structure_Diagram.pdf</a> illustrates the complete container structure when you have one gateway and three nodes. Gateway also hosts a private docker registry in this case. The registry does not reside in the <code>overlay</code> network but has port 5000 open.</p>
 
 <p>To stop and remove all containers:</p>
 

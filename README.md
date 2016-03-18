@@ -5,7 +5,7 @@ AnDoKaElk
 ###### Creation: Lingxiao Xia
 ###### Creation Date: 2016-03-17
 
-This package creates a all components of a log processing pipeline. 
+This is an `ansible` playbook for creating a secured and dockerized private `kafka` and `elasticsearch` cluster with `logstash` as connectors. It uses `kibana` and `elasticsearch-kopf` as UI and [`oauth2_proxy`](https://github.com/bitly/oauth2_proxy) as security frontend.
 
 A few steps to take before running the playbook:
 

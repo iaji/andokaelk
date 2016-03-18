@@ -14,12 +14,14 @@ A few steps to take before running the playbook:
 3. Run `ansible-vault create vars/common_vault` and add the following variables for passwords:
     * `vault_ca_pass`
     * `vault_registry_pass`
-4. Run `ansible-vault create vars/common_vault` and add your google app client info, for more information on google app client, please visit [google developer console](https://console.developers.google.com/):
+4. Run `ansible-vault create vars/vault` and add your google app client info, for more information on google app client, please visit [google developer console](https://console.developers.google.com/):
     * `vault_google_app_client_id`
     * `vault_google_app_client_secret`
-5. Please make sure that `docker 1.10.0` and its dependencies are installed and running as a service on all destination hosts.
-6. Please create an overlay network `{{ default_network }}` using `docker-machine` on all destination hosts. 
-7. Create all images. Run the following command at project folder:
+5. Add a valid redirect uri for `elasticsearch` to your google app client via google developer console. This should be the same as `https://{{ expose_elasticsearch_as }}:{{ expose_elasticsearch }}` from your `gateway` host variables. 
+6. Add a valid redirect uri for `kibana` to your google app client via google developer console. This should be the same as `https://{{ expose_kibana_as }}:{{ expose_kibana }}` from your `gateway` host variables. 
+7. Please make sure that `docker 1.10.0` and its dependencies are installed and running as a service on all destination hosts.
+8. Please create an overlay network `{{ default_network }}` using `docker-machine` on all destination hosts. 
+9. Create all images. Run the following command at project folder:
     ```
     ansible-playbook -i staging --ask-vault-pass images.yaml
     ```

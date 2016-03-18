@@ -10,9 +10,9 @@ This package creates a all components of a log processing pipeline.
 A few steps to take before running the playbook:
 
 1. Make sure that `docker 1.10.3` is installed locally.
-2. Install `docker-machine v0.6.0` locally and use `docker-machine` to create a `swarm` cluster with an overlay network `{{ default_network }}`("andofaelk_default")  with at least two instances. One of them will act as the `gateway` and the others as `nodes`. They are treated as the destination hosts. `gateway` requirements at least 1GB ram. `nodes` require a lot more because `elasticsearch` requires a lot more RAM for good performance. Normally 16GB is the minimum.
+2. Install `docker-machine v0.6.0` locally and use `docker-machine` to create a `swarm` cluster with an `overlay` network `{{ default_network }}`("andofaelk_default")  with at least two instances. One of them will act as the `gateway` and the others as `nodes`. They are treated as the destination hosts. `gateway` requirements at least 1GB ram. `nodes` require a lot more because `elasticsearch` requires a lot more RAM for good performance. Normally 16GB is the minimum.
 3. Create your own private/public key pair and add the public key to all destination hosts' `~/.ssh/authorized_keys`. Use your private key for accessing the destination hosts.
-4. If you are testing the package locally, there is no need for installing `docker-machine` and creating the `overlay_network`. Create the default network with `docker network create {{ default_network }}`. 
+4. If you are testing the package locally, there is no need for installing `docker-machine` and creating the `overlay` network. Create a private `bridge` network with `docker network create {{ default_network }}`. 
 5. Make sure all distination hosts have `python2.7` installed. 
 6. If you would like to create a private docker registry and use it for all your images, you could do so with [dockreg](http://xialingxiao.github.io/dockreg). In which case, make sure `pip` and python package `pexpect` are installed at registry host. 
 7. Install `ansible 2.0.0.2` and its dependencies locally.
@@ -36,6 +36,8 @@ To start all containers:
 ```
 ansible-playbook -i staging --ask-vault-pass run.yaml
 ```
+
+[Andokaelk_Container_Structure_Diagram.pdf](Andokaelk_Container_Structure_Diagram.pdf) illustrates the complete container structure when you have one gateway and three nodes. Gateway also hosts a private docker registry in this case. The registry does not reside in the `overlay` network but has port 5000 open.
 
 To stop and remove all containers:
 ```

@@ -37,13 +37,13 @@
 
 <ol>
 <li>Make sure that <code>docker 1.10.3</code> is installed locally.</li>
-<li>Install <code>docker-machine v0.6.0</code> locally and use <code>docker-machine</code> to create a <code>swarm</code> cluster with an <code>overlay</code> network <code>{{ default_network }}</code>("andofaelk_default")  with at least two instances. One of them will act as the <code>gateway</code> and the others as <code>nodes</code>. They are treated as the destination hosts. <code>gateway</code> requirements at least 1GB ram. <code>nodes</code> require a lot more because <code>elasticsearch</code> requires a lot more RAM for good performance. Normally 16GB is the minimum.</li>
+<li>Install <code>docker-machine v0.6.0</code> locally and use <code>docker-machine</code> to create a <code>swarm</code> cluster with an <code>overlay</code> network <code>{{ default_network }}</code>("andofaelk_default")  with at least two instances. One of them will act as the <code>gateway</code> and the others as <code>nodes</code>. They are treated as the destination hosts. <code>gateway</code> requirements at least 1GB ram. <code>nodes</code> require a lot more because <code>elasticsearch</code> requires a lot more RAM for good performance. Normally 16GB is the minimum. </li>
 <li>Create your own private/public key pair and add the public key to all destination hosts' <code>~/.ssh/authorized_keys</code>. Use your private key for accessing the destination hosts.</li>
-<li>If you are testing the package locally, there is no need for installing <code>docker-machine</code> and creating the <code>overlay</code> network. Create a private <code>bridge</code> network with <code>docker network create {{ default_network }}</code>. </li>
+<li>If you are testing the package locally, there is no need for installing <code>docker-machine</code> and creating the <code>overlay</code> network. Create a docker group and add your user(<code>sudo usermod -aG docker $(whoami)</code>) so that you could run <code>docker</code> without <code>sudo</code>. Next, create a private <code>bridge</code> network with <code>docker network create {{ default_network }}</code>. </li>
 <li>Make sure all distination hosts have <code>python2.7</code> installed. </li>
 <li>If you would like to create a private docker registry and use it for all your images, you could do so with <a href="http://xialingxiao.github.io/dockreg">dockreg</a>. In which case, make sure <code>pip</code> and python package <code>pexpect</code> are installed at registry host. </li>
 <li>Install <code>ansible 2.0.0.2</code> and its dependencies locally.</li>
-<li>Open the inventory file <a href="https://github.com/xialingxiao/andokaelk/blob/master/staging">staging</a> and modify the destinations accordingly and update the variables.</li>
+<li>Open the inventory file <a href="https://github.com/xialingxiao/andokaelk/blob/master/staging">staging</a> and modify the destinations accordingly and update the variables stored in the files in the <a href="https://github.com/xialingxiao/andokaelk/tree/master/vars">vars/</a> directory. </li>
 <li>Choose a vault passphrase and use the same passphrase for the following two steps.</li>
 <li>Run <code>ansible-vault create vars/common_vault</code> and add the following variables for passwords:
 
@@ -59,9 +59,17 @@
 <li><code>vault_google_app_client_secret</code></li>
 </ul>
 </li>
-<li>Add a valid redirect uri for <code>elasticsearch</code> to your google app client via google developer console. This should be the same as <code>https://{{ expose_elasticsearch_as }}:{{ expose_elasticsearch }}</code> from your <code>gateway</code> host variables. </li>
-<li>Add a valid redirect uri for <code>kibana</code> to your google app client via google developer console. This should be the same as <code>https://{{ expose_kibana_as }}:{{ expose_kibana }}</code> from your <code>gateway</code> host variables. </li>
-<li>Please make sure that <code>docker 1.10.0</code> and its dependencies are installed and running as a service on all destination hosts.</li>
+<li>
+<p>Add a valid redirect uri for <code>elasticsearch</code> to your google app client via google developer console. This should be the same as <code>https://{{ elasticsearch_domain }}/oauth2/callback</code> from your <code>gateway</code> host variables. Or if it does not have a public domain, it should be <code>https://{{ expose_elasticsearch_as }}:{{ expose_elasticsearch }}/oauth2/callback</code>. Note that google app redirect uri is required to be either a public top-level domain or localhost, meaning <code>{{expose_elasticsearch_as}}</code> is required to be <code>127.0.0.1</code> unless google changes its policies in the future. You could use the <code>-L</code> option of <code>ssh</code> to create a ssh tunnel for accessing remote host's port locally, or <code>autossh</code> if you want persistant connection. For example, suppose you have set-up the cluster already, use </p>
+
+<ul>
+<li><code>autossh -f -L {{ expose_elasticsearch }}:127.0.0.1:{{ expose_elasticsearch }} -i {{ hostvars['gateway']['ansible_ssh_private_key_file'] }} {{ hostvars['gateway']['ansible_user'] }}@{{ hostvars['gateway']['ansible_default_ipv4']['address']}} -N</code></li>
+</ul>
+
+<p>to create the tunnel and point your browser at <code>https://127.0.0.1:{{ expose_elasticsearch }}/_plugin/kopf</code> to interact with your elasticsearch cluster.</p>
+</li>
+<li>Add a valid redirect uri for <code>kibana</code> to your google app client via google developer console. This should be the same as <code>https://{{ kibana_domain }}/oauth2/callback</code> from your <code>gateway</code> host variables. Or if it does not have a public domain, it should be<code>https://{{ expose_kibana_as }}:{{ expose_kibana }}/oauth2/callback</code>. Refer to previous step.</li>
+<li>Please make sure that <code>docker 1.10.0</code> and its dependencies are installed and running as a service on all destination hosts and that <code>{{ ansible_user }}</code> has access to it without <code>sudo</code>.</li>
 <li>Create all images. Run the following command at project folder:
 <code>
 ansible-playbook -i staging --ask-vault-pass images.yaml
@@ -71,7 +79,7 @@ ansible-playbook -i staging --ask-vault-pass images.yaml
 
 <p>To start all containers:</p>
 
-<pre><code>ansible-playbook -i staging --ask-vault-pass run.yaml
+<pre><code>ansible-playbook -i staging --ask-vault-pass -K run.yaml
 </code></pre>
 
 <p><a href="https://github.com/xialingxiao/andokaelk/blob/master/Andokaelk_Container_Structure_Diagram.pdf">Andokaelk_Container_Structure_Diagram.pdf</a> illustrates the complete container structure when you have one gateway and three nodes. Gateway also hosts a private docker registry in this case. The registry does not reside in the <code>overlay</code> network but has port 5000 open.</p>
@@ -83,10 +91,10 @@ ansible-playbook -i staging --ask-vault-pass images.yaml
 
 <p>To clean up all generated contents:</p>
 
-<pre><code>ansible-playbook -i staging --ask-vault-pass clean.yaml
+<pre><code>ansible-playbook -i staging --ask-vault-pass -K clean.yaml
 </code></pre>
 
-<p>Add the <code>-K</code> option if you get <code>access_denied</code> errors. This will ask you for the <code>sudo</code> password before the <code>playbook</code> is run.</p>
+<p>The <code>-K</code> option is only necessary if you are not operating as the root user and there is a root password. </p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/xialingxiao/andokaelk">Andokaelk</a> is maintained by <a href="https://github.com/xialingxiao">xialingxiao</a>.</span>

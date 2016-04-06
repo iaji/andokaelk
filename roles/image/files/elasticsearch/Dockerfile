@@ -21,5 +21,4 @@ RUN /usr/share/elasticsearch/elasticsearch-2.2.0/bin/plugin install lmenezes/ela
 
 RUN mkdir /tmp/elasticsearch/
 RUN groupadd -r elasticsearch && useradd -r -g elasticsearch elasticsearch
-
 CMD chown -R elasticsearch /usr/share/elasticsearch/elasticsearch-2.2.0/config && chown -R elasticsearch /tmp && su -c /usr/share/elasticsearch/elasticsearch-2.2.0/bin/elasticsearch elasticsearch

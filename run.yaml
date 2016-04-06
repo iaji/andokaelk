@@ -15,7 +15,6 @@
       
 - name: setup nodes
   hosts: nodes
-  serial: 1
   vars_files:
     - vars/common_vars 
     - vars/common_vault
@@ -62,7 +61,6 @@
 
 - name: setup the logstash connectors on nodes
   hosts: nodes
-  serial: 1
   vars_files:
     - vars/common_vars 
     - vars/common_vault
@@ -98,5 +96,6 @@
       file: path={{ project_stage_dir }}/docker-compose mode=0755
   roles:
     - kibana
+    - { role: logstash, type: "receiver", template: "logstash_receiver.conf", compose: "docker-compose-receiver.yaml" }
     - { role: auth, role_id: kibana, server_cert: "{{ kibana_cert }}", server_key: "{{ kibana_key }}", access_host: "{{ kibana_access_host }}", access_port: "{{ kibana_access_port }}", redirect_domain: "{{ kibana_domain|default('localhost') }}", upstream_host: "kibana", upstream_port: "{{ kibana_port }}", access_white_list: "kibana_access_white_list" }
     - { role: auth, role_id: elasticsearch, server_cert: "{{ elasticsearch_cert }}", server_key: "{{ elasticsearch_key }}", access_host: "{{ elasticsearch_access_host }}", access_port: "{{ elasticsearch_access_port }}", redirect_domain: "{{ elasticsearch_domain|default('localhost') }}", upstream_host: "elasticsearch0", upstream_port: "{{ elasticsearch_port_start }}", access_white_list: "elasticsearch_access_white_list" }

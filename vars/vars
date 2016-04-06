@@ -24,10 +24,8 @@ images:
     logstash: "logstash:v1"
     kibana: "kibana:v1"
     oauth2: "oauth2:v1"
-kibana_access_white_list:
-    - s1006595991@gmail.com
-elasticsearch_access_white_list:
-    - s1006595991@gmail.com
+kibana_access_white_list: "{{ vault_kibana_access_white_list }}"
+elasticsearch_access_white_list: "{{ vault_elasticsearch_access_white_list }}"
 kibana_key: "{{ home_dir_abs }}/server-key.pem"
 kibana_cert: "{{ home_dir_abs }}/server-cert.pem"
 elasticsearch_key: "{{ home_dir_abs }}/server-key.pem"

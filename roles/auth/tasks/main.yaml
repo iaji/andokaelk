@@ -28,6 +28,14 @@
 - name: copy the certificate to its desired location
   copy: remote_src=true src={{ server_cert }} dest={{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.crt
   when: default_cert.stat.exists == True and default_key.stat.exists == True
+- name: 'make sure CA directory exists'
+  file: 'path={{ ca_dir }} state=directory'
+- name: 'copy the CA from registry host'
+  synchronize:
+    src: {{ ca_dir }}
+    dest: {{ ca_dir }}
+  delegate_to: registry
+  when: default_cert.stat.exists == False or default_key.stat.exists == False
 - name: 'generate registry key "domain.key"'
   command: 'openssl genrsa -out {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key 2048'
   when: default_cert.stat.exists == False or default_key.stat.exists == False

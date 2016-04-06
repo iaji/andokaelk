@@ -15,7 +15,7 @@ RUN echo "export LANG=en_US.utf8" >> ~/.bashrc
 RUN echo "export LANGUAGE=en_US.utf8" >> ~/.bashrc
 
 RUN mkdir /usr/share/kafka
-RUN wget -P /usr/share/kafka http://apache.communilink.net/kafka/0.9.0.1/kafka_2.11-0.9.0.1.tgz
+RUN wget -P /usr/share/kafka http://www-eu.apache.org/dist/kafka/0.9.0.1/kafka_2.11-0.9.0.1.tgz
 RUN tar zxvf /usr/share/kafka/kafka_2.11-0.9.0.1.tgz -C /usr/share/kafka/
 RUN rm /usr/share/kafka/kafka_2.11-0.9.0.1.tgz
 COPY log4j.properties /usr/share/kafka/kafka_2.11-0.9.0.1/config/log4j.properties

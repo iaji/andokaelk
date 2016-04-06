@@ -73,6 +73,24 @@
   roles:
     - { role: logstash, type: "connector", template: "logstash_connector.conf", compose: "docker-compose-connector.yaml" }
 
+- name: get CA from registry
+  hosts: registry
+  vars_files:
+    - vars/common_vars 
+    - vars/common_vault
+    - vars/vars 
+    - vars/vault
+  vars:
+    - project_stage_dir: "{{ stage_dir }}/{{ project_id }}/{{ inventory_hostname }}"
+    - compose_command: "up -d"
+    - host_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+    - node_id: ""
+  tasks:
+    - name: get CA
+      fetch: src={{ ca_dir }}/ca.pem dest=ca/ fail_on_missing=yes flat=yes
+    - name: get CA key
+      fetch: src={{ ca_dir }}/ca-key.pem dest=ca/ fail_on_missing=yes flat=yes
+
 - name: setup receiver and auth proxy
   hosts: gateway
   vars_files:

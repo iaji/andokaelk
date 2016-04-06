@@ -1,5 +1,5 @@
 ---
-project_id: "andokaelk"
+project_id: "{{ vault_project_id }}"
 kibana_access_host: "{{ hostvars['gateway']['expose_kibana_as'] }}"
 elasticsearch_access_host: "{{ hostvars['gateway']['expose_elasticsearch_as'] }}"
 kibana_access_port: "{{ hostvars['gateway']['expose_kibana'] | int }}"
@@ -14,10 +14,11 @@ elasticsearch_node_port_start: 9300
 kibana_port: 5601
 google_app_client_id: "{{ vault_google_app_client_id }}"
 google_app_client_secret: "{{ vault_google_app_client_secret }}"
-email_domain: "gmail.com"
-topics:
-    - "elasticsearch-access"
-    - "kibana-access" 
+email_domain: "{{ vault_email_domain }}"
+default_topics: 
+    - kibana-access
+    - elasticsearch-access
+topics: "{{ vault_topics }}"
 images:
     kafka: "kafka:v1"
     elasticsearch: "elasticsearch:v1"

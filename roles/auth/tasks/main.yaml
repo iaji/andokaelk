@@ -30,11 +30,11 @@
   when: default_cert.stat.exists == True and default_key.stat.exists == True
 - name: 'make sure CA directory exists'
   file: 'path={{ ca_dir }} state=directory'
-- name: 'copy the CA from registry host'
-  synchronize:
-    src: {{ ca_dir }}
-    dest: {{ ca_dir }}
-  delegate_to: registry
+- name: 'copy the CA to host'
+  copy: 'src="ca/ca.pem" dest="{{ ca_dir }}/ca.pem"'
+  when: default_cert.stat.exists == False or default_key.stat.exists == False
+- name: 'copy the CA key to host'
+  copy: 'src="ca/ca-key.pem" dest="{{ ca_dir }}/ca-key.pem"'
   when: default_cert.stat.exists == False or default_key.stat.exists == False
 - name: 'generate registry key "domain.key"'
   command: 'openssl genrsa -out {{ project_stage_dir }}/auth/{{ role_id }}/oauth2/certs/domain.key 2048'

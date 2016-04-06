@@ -2,7 +2,7 @@ version: '2'
 
 services:
     {{ type }}:
-        image: {{ hostvars.gateway.docker_registry }}/{{ images.logstash }}
+        image: {{ docker_registry }}/{{ images.logstash }}
         volumes:
             - ./config/:/tmp/logstash/config
             - ./input/:/tmp/logstash/input
@@ -16,4 +16,4 @@ services:
 networks:
     default:
         external:
-            name: {{ project_id }}_default
+            name: {{ default_network }}

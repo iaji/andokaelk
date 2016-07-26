@@ -25,10 +25,12 @@
     - compose_command: "stop"
   tasks:
     - name: "stop the containers"
-      command: "docker stop {{ project_id }}_receiver {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"
+      command: "docker stop {{ project_id }}_exchange {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"
+      ignore_errors: yes
     - name: "remove the containers"
-      command: "docker rm -vf {{ project_id }}_receiver {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"
-      
+      command: "docker rm -vf {{ project_id }}_exchange {{ project_id }}_kibana {{ project_id }}_kibana_authlog {{ project_id }}_kibana_oauth2 {{ project_id }}_elasticsearch_authlog {{ project_id }}_elasticsearch_oauth2"
+      ignore_errors: yes
+  
 - name: stop the docker containers on nodes
   hosts: nodes
   vars_files:
@@ -42,13 +44,20 @@
   tasks:
     - name: "stop the logstash connectors on nodes"
       command: "docker stop {{ project_id }}_connector_{{ node_id }}"
+      ignore_errors: yes
     - name: "stop the kafka cluster on nodes"
       command: "docker stop {{ project_id }}_kafka_{{ node_id }}"
+      ignore_errors: yes
     - name: "stop the elasticsearch cluster on nodes"
       command: "docker stop {{ project_id }}_elasticsearch_{{ node_id }}"
+      ignore_errors: yes
     - name: "remove the logstash connectors on nodes"
       command: "docker rm -vf {{ project_id }}_connector_{{ node_id }}"
+      ignore_errors: yes
     - name: "remove the kafka cluster on nodes"
       command: "docker rm -vf {{ project_id }}_kafka_{{ node_id }}"
+      ignore_errors: yes
     - name: "remove the elasticsearch cluster on nodes"
       command: "docker rm -vf {{ project_id }}_elasticsearch_{{ node_id }}"
+      ignore_errors: yes
+    
